@@ -163,7 +163,8 @@ equation = StringVar()
 
 #Entrybox for Buttons
 conOfentNum = StringVar(window, value = equation)
-entName = Entry(window, text="$0.00", textvariable=equation)
+entName = Entry(window, textvariable=equation)
+entName.insert(0,'$0')
 entName.grid(row=2,column=2,sticky=W)
 entName.focus_set()
 
