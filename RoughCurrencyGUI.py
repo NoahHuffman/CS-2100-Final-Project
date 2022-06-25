@@ -26,10 +26,30 @@ def CurrencyConversion(origNum, origCountry, convCountry):
 
 def record():
     content=entName.get()
-    content=float(content)
-    content = CurrencyConversion(content, str(countries[countryFrom.curselection()[0]]), str(countries[countryTo.curselection()[0]]))
-    content="{0:s}{1:,.2f}".format('$',content)
-    result["text"]=content
+    selectedFrom = str(countries[countryFrom.curselection()[0]])
+    selectedTo = str(countries[countryTo.curselection()[0]])
+    symbol = moneySymbol[selectedTo]
+    whichSide = leftOrRight[selectedTo]
+    dotComma = commaOrDecimal[selectedTo]
+    try:
+        content=float(content)
+        content = CurrencyConversion(content, selectedFrom, selectedTo)        
+        if whichSide == "right":
+            if dotComma == "decimal":
+                content="{0:,.2f}{1:s}".format(content,symbol).replace(",","w").replace(".",",").replace("w",".")
+                result["text"]=content
+            elif dotComma == "comma":
+                content="{0:,.2f}{1:s}".format(content,symbol)
+                result["text"]=content 
+        elif whichSide == "left":
+            if dotComma == "decimal":
+                content="{0:s}{1:,.2f}".format(symbol,content).replace(",","w").replace(".",",").replace("w",".")
+                result["text"]=content
+            elif dotComma == "comma":
+                content="{0:s}{1:,.2f}".format(symbol,content)
+                result["text"]=content       
+    except Exception:
+        print('oops')
     
 
 def pressNum(num):    
@@ -91,7 +111,6 @@ for line in infile:
 infile.close()
 for c in countryDict.keys():
     countries.append(c)
-print(countries)
 
 
 window = Tk()
@@ -205,13 +224,6 @@ scrollLS["command"] = countryFrom.yview
 scrollRS = Scrollbar(window,orient=VERTICAL)
 scrollRS.grid(row=3,column=3,sticky=NS)
 scrollRS['command']= countryTo.yview
-
-
-
-
-
-
-
 
 countryFrom.selection_set(first=0)
 countryTo.selection_set(first = 0)
