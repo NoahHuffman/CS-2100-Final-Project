@@ -1,14 +1,6 @@
-from ast import Expression
-from ctypes import resize
-from logging import root
 from tkinter import *
-from tkinter import font
-from turtle import left, width
 from PIL import Image,ImageTk
 from Currency import Currency
-from tkinter import ttk
-
-
 
 expression = ''
 #Button Functions
@@ -40,8 +32,7 @@ def record():
     result["text"]=content
     
 
-def pressNum(num):
-    
+def pressNum(num):    
     global expression
     expression = expression+str(num)
     equation.set(expression)
@@ -74,6 +65,20 @@ def changeCountryTo(event):
         window.mainloop()
         ################FLAG
 
+def help():
+    frame = Tk()
+    frame.title("Help Window")
+    frame.geometry('325x200')
+    mssgOne = Label(frame,text="1. Select a country to convert from.",font="Calibri, 14")
+    mssgOne.grid(row=0,column=0,pady=7,sticky=W)
+    mssgTwo = Label(frame,text='2. Select a country to convert to',font="Calibri, 14")
+    mssgTwo.grid(row=1,column=0,pady=7,sticky=W)
+    mssg3 = Label(frame,text="3. Enter an amount",font="Calibri, 14")
+    mssg3.grid(row=2,column=0,pady=7,sticky=W)
+    mssg4 = Label(frame,text="4. Press 'Record'",font="Calibri, 14")
+    mssg4.grid(row=3,column=0,pady=7,sticky=W)
+    frame.mainloop()
+
 
 
 infile = open("Exchrate.txt")
@@ -105,7 +110,7 @@ titleTop = Label(window,bg="salmon")
 titleBot = Label(window,bg="salmon")
 converMssg1 = Label(window,text="    Convert from     ")
 converMss2 = Label(window,text= "       Convert to        ")
-result = Label(window,text="")
+result = Label(window,text="$0.00")
 
 
 titleTop.grid(row=0,column=0,columnspan=7,sticky=EW)
@@ -138,7 +143,7 @@ equation = StringVar()
 
 #Entrybox for Buttons
 conOfentNum = StringVar(window, value = equation)
-entName = Entry(window,  textvariable=equation)
+entName = Entry(window, text="$0.00", textvariable=equation)
 entName.grid(row=2,column=2,sticky=W)
 entName.focus_set()
 
@@ -175,7 +180,7 @@ btn_record = Button(buttonFrame,text="Record",width=16,bg='red',font=('Calibri 1
 btn_record.grid(row=0,column=3,columnspan=3)
 
 #Help button
-btn_help = Button(buttonFrame,text="Help?", width=16,bg = 'silver', font=('Calibri 18'))
+btn_help = Button(buttonFrame,text="Help", width=16,bg = 'silver', font=('Calibri 18'),command=lambda: help())
 btn_help.grid(row=3, column=3, columnspan=3)
 
 #ListBox Left Side
@@ -192,14 +197,13 @@ countryTo.grid(row=3,column=4,sticky=W,columnspan=1)
 conOfCountryTo.set(tuple(countries))
 countryTo.bind('<<ListboxSelect>>', changeCountryTo)
 
-
-#Scrolls
+#ScrollWheels
 scrollLS = Scrollbar(window,orient=VERTICAL)
-scrollLS.grid(row=3,column=0,sticky=NSEW)
+scrollLS.grid(row=3,column=0,sticky=NS)
 scrollLS["command"] = countryFrom.yview
 
 scrollRS = Scrollbar(window,orient=VERTICAL)
-scrollRS.grid(row=3,column=3,sticky=NSEW)
+scrollRS.grid(row=3,column=3,sticky=NS)
 scrollRS['command']= countryTo.yview
 
 
