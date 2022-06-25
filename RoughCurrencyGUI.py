@@ -24,6 +24,7 @@ def CurrencyConversion(origNum, origCountry, convCountry):
         convNum = (origNum / eval(exchRates[origCountry])) * eval(exchRates[convCountry])
         return convNum
 
+#Formats the amount and displays it in the "result" widget
 def record():
     content=entName.get()
     selectedFrom = str(countries[countryFrom.curselection()[0]])
@@ -49,7 +50,7 @@ def record():
                 content="{0:s}{1:,.2f}".format(symbol,content)
                 result["text"]=content       
     except Exception:
-        print('oops')
+        print('TOO MANY DECIMAL POINTS')
     
 
 def pressNum(num):    
