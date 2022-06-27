@@ -19,61 +19,22 @@ for i in inRates:
     leftOrRight[tempItem[0]] = tempItem[2]
     commaOrDecimal[tempItem[0]] = tempItem[3]
 
+def commaChange():
+    selectedFrom = str(countries[countryFrom.curselection()[0]])
+    dotComma = commaOrDecimal[selectedFrom]
+    if dotComma == "comma":
+        btndot["text"]="."
+    elif dotComma == "decimal":
+        btndot["text"]=","
+    #pressNum(".")
+
 def CurrencyConversion(origNum, origCountry, convCountry):
     if origNum >= 0:
         convNum = (origNum / eval(exchRates[origCountry])) * eval(exchRates[convCountry])
         return convNum
 
-
-
-def buttonSequence(num):
-    pressNum(num)
-    record()
-    
-
-
-
-def getText():
-    return entName.get()
-
-def updateEntry():
-    try:
-        entrySub.config(text="${:,.2f}".format(float(entName.get())))
-    except: 
-        entrySub.config(text = "$0.00")
-
-
 #Formats the amount and displays it in the "result" widget
 def record():
-    getText()
-    content=str(entName.get())
-    selectedFrom = str(countries[countryFrom.curselection()[0]])
-    selectedTo = str(countries[countryTo.curselection()[0]])
-    symbol = moneySymbol[selectedTo]
-    whichSide = leftOrRight[selectedTo]
-    dotComma = commaOrDecimal[selectedTo]
-    try:
-        content=float(content)
-        content = CurrencyConversion(content, selectedFrom, selectedTo)        
-        if whichSide == "right":
-            if dotComma == "decimal":
-                content="{0:,.2f}{1:s}".format(content,symbol).replace(",","w").replace(".",",").replace("w",".")
-                result["text"]=content
-            elif dotComma == "comma":
-                content="{0:,.2f}{1:s}".format(content,symbol)
-                result["text"]=content 
-        elif whichSide == "left":
-            if dotComma == "decimal":
-                content="{0:s}{1:,.2f}".format(symbol,content).replace(",","w").replace(".",",").replace("w",".")
-                result["text"]=content
-            elif dotComma == "comma":
-                content="{0:s}{1:,.2f}".format(symbol,content)
-                result["text"]=content       
-    except Exception:
-        print('Error')
-    
-
-def record2(event):
     content=entName.get()
     selectedFrom = str(countries[countryFrom.curselection()[0]])
     selectedTo = str(countries[countryTo.curselection()[0]])
@@ -89,7 +50,7 @@ def record2(event):
                 result["text"]=content
             elif dotComma == "comma":
                 content="{0:,.2f}{1:s}".format(content,symbol)
-                result["text"]=content 
+                result["text"]=content
         elif whichSide == "left":
             if dotComma == "decimal":
                 content="{0:s}{1:,.2f}".format(symbol,content).replace(",","w").replace(".",",").replace("w",".")
@@ -98,28 +59,47 @@ def record2(event):
                 content="{0:s}{1:,.2f}".format(symbol,content)
                 result["text"]=content       
     except Exception:
-        print('Error')
+        print('ERROR')
 
+def record2():
+    content=entName.get()
+    selectedFrom = str(countries[countryFrom.curselection()[0]])
+    symbol = moneySymbol[selectedFrom]
+    whichSide = leftOrRight[selectedFrom]
+    dotComma = commaOrDecimal[selectedFrom]
+    try:
+        content=float(content)      
+        if whichSide == "right":
+            if dotComma == "decimal":
+                content="{0:,.2f}{1:s}".format(content,symbol).replace(",","w").replace(".",",").replace("w",".")
+                lblres["text"]=content
+            elif dotComma == "comma":
+                content="{0:,.2f}{1:s}".format(content,symbol)
+                result["text"]=content 
+        elif whichSide == "left":
+            if dotComma == "decimal":
+                content="{0:s}{1:,.2f}".format(symbol,content).replace(",","w").replace(".",",").replace("w",".")
+                lblres["text"]=content
+            elif dotComma == "comma":
+                content="{0:s}{1:,.2f}".format(symbol,content)
+                lblres["text"]=content       
+    except Exception:
+        print('TOO MANY DECIMAL POINTS')        
+    
 
-
-
-
-def pressNum(num): 
+def pressNum(num):    
     global expression
     expression = expression+str(num)
     equation.set(expression)
-
-    
+    record()
+    record2()
 def clear():
     global expression
     expression = ''
     equation.set(expression)
+    lblres['text']= pressNum(0)
+    result["text"]= pressNum(0)
     
-
-def selectionSequence(event):
-    changeCountryFrom(event)
-    record()
-
 
 
 def changeCountryFrom(event):
@@ -131,10 +111,9 @@ def changeCountryFrom(event):
         render1 = ImageTk.PhotoImage(imgfrom)
         imgLblfrom = Label(window,image=render1)
         imgLblfrom.grid(row=3,column=2,padx=10,sticky=W)
-
-        eq = entName.get()
-        eqFormatted = "{0:s}{1:,.2f}".format('$',float(eq))
-        equationSub.set(eqFormatted)
+        record()
+        record2()
+        commaChange()
         window.mainloop()
         ################FLAG
 def changeCountryTo(event):
@@ -145,6 +124,8 @@ def changeCountryTo(event):
         render2 = ImageTk.PhotoImage(imgto)
         imgLblto = Label(window,image=render2)
         imgLblto.grid(row=3,column=5,padx=5,sticky=W)
+        record()
+        record2()
         window.mainloop()
         ################FLAG
 
@@ -226,35 +207,40 @@ equation = StringVar()
 #Entrybox for Buttons
 conOfentNum = StringVar(window, value = equation)
 entName = Entry(window, textvariable=equation)
-entrySub = Label(window, textvariable=equation)
-entrySub.grid(row=2,column=2,sticky=EW)
-entName.grid(row=1,column=1)
-#entName.bind("<Key>",lambda v: window.after(10,updateEntry))
-#entName.focus_set()
+#entName.grid(row=1,column=1,sticky=W)
+entName.focus_set()
+
+#Convert from Formatting label
+equation_two = StringVar()
+conOfentForm = StringVar(window,value = equation)
+lblres = Label(window,text='')
+lblres.grid(row=2,column=2,sticky=EW)
 
 
-btn1 = Button(buttonFrame,text="1",width=4,bg='silver',font=('Calibri 18'),command=lambda: buttonSequence(1))
+
+
+btn1 = Button(buttonFrame,text="1",width=4,bg='silver',font=('Calibri 18'),command=lambda: pressNum(1))
 btn1.grid(row=0,column=0,padx=10,pady=5)
-btn2 = Button(buttonFrame,text="2",width=4,bg='silver',font=('Calibri 18'),command=lambda:buttonSequence(2))
+btn2 = Button(buttonFrame,text="2",width=4,bg='silver',font=('Calibri 18'),command=lambda:pressNum(2))
 btn2.grid(row=0,column=1,padx=10,pady=5)
-btn3 = Button(buttonFrame,text="3",width=4,bg='silver',font=('Calibri 18'),command= lambda:buttonSequence(3))
+btn3 = Button(buttonFrame,text="3",width=4,bg='silver',font=('Calibri 18'),command= lambda:pressNum(3))
 btn3.grid(row=0,column=2,padx=10,pady=5)
-btn4 = Button(buttonFrame,text="4",width=4,bg='silver',font=('Calibri 18'),command=lambda:buttonSequence(4))
+btn4 = Button(buttonFrame,text="4",width=4,bg='silver',font=('Calibri 18'),command=lambda:pressNum(4))
 btn4.grid(row=1,column=0,padx=10,pady=5)
-btn5 = Button(buttonFrame,text="5",width=4,bg='silver',font=('Calibri 18'),command= lambda:buttonSequence(5))
+btn5 = Button(buttonFrame,text="5",width=4,bg='silver',font=('Calibri 18'),command= lambda:pressNum(5))
 btn5.grid(row=1,column=1,padx=10,pady=5)
-btn6 = Button(buttonFrame,text="6",width=4,bg='silver',font=('Calibri 18'),command=lambda:buttonSequence(6))
+btn6 = Button(buttonFrame,text="6",width=4,bg='silver',font=('Calibri 18'),command=lambda:pressNum(6))
 btn6.grid(row=1,column=2,padx=10,pady=5)
 
-btn7 = Button(buttonFrame,text="7",width=4,bg='silver',font=('Calibri 18'),command=lambda:buttonSequence(7))
+btn7 = Button(buttonFrame,text="7",width=4,bg='silver',font=('Calibri 18'),command=lambda:pressNum(7))
 btn7.grid(row=3,column=0,padx=10,pady=5)
-btn8 = Button(buttonFrame,text="8",width=4,bg='silver',font=('Calibri 18'),command=lambda:buttonSequence(8))
+btn8 = Button(buttonFrame,text="8",width=4,bg='silver',font=('Calibri 18'),command=lambda:pressNum(8))
 btn8.grid(row=3,column=1,padx=10,pady=5)
-btn9 = Button(buttonFrame,text="9",width=4,bg='silver',font=('Calibri 18'),command=lambda:buttonSequence(9))
+btn9 = Button(buttonFrame,text="9",width=4,bg='silver',font=('Calibri 18'),command=lambda:pressNum(9))
 btn9.grid(row=3,column=2,padx=10,pady=5)
-btn0 = Button(buttonFrame,text="0",width=4,bg='silver',font=('Calibri 18'),command=lambda:buttonSequence(0))
+btn0 = Button(buttonFrame,text="0",width=4,bg='silver',font=('Calibri 18'),command=lambda:pressNum(0))
 btn0.grid(row=1,column=3,padx=10,pady=5)
-btndot = Button(buttonFrame,text=".",width=4,bg='silver',font=('Calibri 18'),command=lambda:buttonSequence('.'))
+btndot = Button(buttonFrame,text=".",width=4,bg='silver',font=('Calibri 18'),command=lambda:commaChange())
 btndot.grid(row=1,column=4,padx=10,pady=5)
 btnClear = Button(buttonFrame,text="C",width=4,bg='silver',font=('Calibri 18'),command=lambda:clear())
 btnClear.grid(row=1,column=5,padx=10,pady=5)
@@ -273,14 +259,14 @@ conOfCountryFrom = StringVar()
 countryFrom = Listbox(window,exportselection=0,listvariable=conOfCountryFrom)    
 countryFrom.grid(row=3,column=1,sticky=W)
 conOfCountryFrom.set(tuple(countries))
-countryFrom.bind("<<ListboxSelect>>", selectionSequence)
+countryFrom.bind("<<ListboxSelect>>", changeCountryFrom)
 
 #Listboxt Right Side
 conOfCountryTo = StringVar()
 countryTo =Listbox(window,exportselection=0,listvariable=conOfCountryTo)
 countryTo.grid(row=3,column=4,sticky=W,columnspan=1)
 conOfCountryTo.set(tuple(countries))
-countryTo.bind('<<ListboxSelect>>', selectionSequence)
+countryTo.bind('<<ListboxSelect>>', changeCountryTo)
 
 #ScrollWheels
 scrollLS = Scrollbar(window,orient=VERTICAL)
@@ -293,4 +279,5 @@ scrollRS['command']= countryTo.yview
 
 countryFrom.selection_set(first=0)
 countryTo.selection_set(first = 0)
+pressNum(0)
 window.mainloop()
