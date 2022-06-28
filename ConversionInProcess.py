@@ -19,14 +19,22 @@ for i in inRates:
     leftOrRight[tempItem[0]] = tempItem[2]
     commaOrDecimal[tempItem[0]] = tempItem[3]
 
-def commaChange():
-    selectedFrom = str(countries[countryFrom.curselection()[0]])
-    dotComma = commaOrDecimal[selectedFrom]
-    if dotComma == "comma":
-        btndot["text"]="."
-    elif dotComma == "decimal":
-        btndot["text"]=","
-    #pressNum(".")
+def disableDot():
+    if btndot['state'] == NORMAL:
+        btndot['command']=pressNum('.')
+        btndot['state'] = DISABLED
+        print('yay')
+    else:
+        print("Button is disabled")
+
+
+def saveResults():
+    root = Tk()
+    root.title("Record of Conversions")
+    root.geometry('400x550')
+    list = []
+    
+    root.mainloop()
 
 def CurrencyConversion(origNum, origCountry, convCountry):
     if origNum >= 0:
@@ -99,6 +107,7 @@ def clear():
     equation.set(expression)
     lblres['text']= pressNum(0)
     result["text"]= pressNum(0)
+    btndot['state']= NORMAL
     
 
 
@@ -111,9 +120,13 @@ def changeCountryFrom(event):
         render1 = ImageTk.PhotoImage(imgfrom)
         imgLblfrom = Label(window,image=render1)
         imgLblfrom.grid(row=3,column=2,padx=10,sticky=W)
+        if commaOrDecimal[flagFile] == "comma":
+            btndot["text"] = "."
+        else:
+            btndot["text"] = ','
         record()
         record2()
-        commaChange()
+        
         window.mainloop()
         ################FLAG
 def changeCountryTo(event):
@@ -240,14 +253,14 @@ btn9 = Button(buttonFrame,text="9",width=4,bg='silver',font=('Calibri 18'),comma
 btn9.grid(row=3,column=2,padx=10,pady=5)
 btn0 = Button(buttonFrame,text="0",width=4,bg='silver',font=('Calibri 18'),command=lambda:pressNum(0))
 btn0.grid(row=1,column=3,padx=10,pady=5)
-btndot = Button(buttonFrame,text=".",width=4,bg='silver',font=('Calibri 18'),command=lambda:commaChange())
+btndot = Button(buttonFrame,text=".",width=4,bg='silver',font=('Calibri 18'),state=NORMAL,command=lambda:disableDot())
 btndot.grid(row=1,column=4,padx=10,pady=5)
 btnClear = Button(buttonFrame,text="C",width=4,bg='silver',font=('Calibri 18'),command=lambda:clear())
 btnClear.grid(row=1,column=5,padx=10,pady=5)
 
 
 #Record button
-btn_record = Button(buttonFrame,text="Record",width=16,bg='red',font=('Calibri 18'),command=lambda:record())
+btn_record = Button(buttonFrame,text="Record",width=16,bg='red',font=('Calibri 18'),command=lambda:saveResults())
 btn_record.grid(row=0,column=3,columnspan=3)
 
 #Help button
