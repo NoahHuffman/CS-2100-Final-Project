@@ -23,17 +23,31 @@ def disableDot():
     if btndot['state'] == NORMAL:
         btndot['command']=pressNum('.')
         btndot['state'] = DISABLED
-        print('yay')
     else:
         print("Button is disabled")
 
+recordDict = {}
+listFrom = []
+listTo = []
 
 def saveResults():
     root = Tk()
     root.title("Record of Conversions")
-    root.geometry('400x550')
-    list = []
+    root.geometry('400x440')
+    listFrom.append(lblres['text']+'\n')
+    listTo.append(result['text']+'\n')
+    root.columnconfigure(0,weight=1)
+
+    f = Label(root,text=listFrom,font="Arial, 14",width=17)
+    t = Label(root,text=listTo,font="Arial, 14",width=17)
+    f["text"]=str(f["text"]).replace('{','').replace('}','')
+    t["text"]=str(t["text"]).replace('{','').replace('}','')
+    f.grid(row=0,column=0,padx=5,pady=5,sticky=W,columnspan=1)
+    t.grid(row=0,column=1,padx=5,pady=5,sticky=E,columnspan=1)
     
+
+
+
     root.mainloop()
 
 def CurrencyConversion(origNum, origCountry, convCountry):
@@ -69,6 +83,7 @@ def record():
     except Exception:
         print('ERROR')
 
+#formats the input, and places it into a label
 def record2():
     content=entName.get()
     selectedFrom = str(countries[countryFrom.curselection()[0]])
@@ -92,7 +107,7 @@ def record2():
                 content="{0:s}{1:,.2f}".format(symbol,content)
                 lblres["text"]=content       
     except Exception:
-        print('TOO MANY DECIMAL POINTS')        
+        print('Error')        
     
 
 def pressNum(num):    
@@ -101,6 +116,7 @@ def pressNum(num):
     equation.set(expression)
     record()
     record2()
+
 def clear():
     global expression
     expression = ''
@@ -145,15 +161,13 @@ def changeCountryTo(event):
 def help():
     frame = Tk()
     frame.title("Help Window")
-    frame.geometry('325x200')
+    frame.geometry('325x150')
     mssgOne = Label(frame,text="1. Select a country to convert from.",font="Calibri, 14")
     mssgOne.grid(row=0,column=0,pady=7,sticky=W)
     mssgTwo = Label(frame,text='2. Select a country to convert to',font="Calibri, 14")
     mssgTwo.grid(row=1,column=0,pady=7,sticky=W)
     mssg3 = Label(frame,text="3. Enter an amount",font="Calibri, 14")
     mssg3.grid(row=2,column=0,pady=7,sticky=W)
-    mssg4 = Label(frame,text="4. Press 'Record'",font="Calibri, 14")
-    mssg4.grid(row=3,column=0,pady=7,sticky=W)
     frame.mainloop()
 
 
@@ -176,7 +190,6 @@ window.title("Currency Converter")
 window.geometry('665x560')
 window.iconbitmap('Conversion.ico')
 bg = (PhotoImage(file = "Anotherbackground.png"))
-bg2 =(PhotoImage(file='background2.png'))
 
 label1 =Label(window,image=bg)
 label1.place(x=0,y=0)
@@ -197,7 +210,7 @@ result.grid(row=2,column=5,padx=10,pady=5,sticky=EW)
 
 
 buttonFrame = Frame(window)
-background_frame = Label(buttonFrame)#,image=bg2)
+background_frame = Label(buttonFrame)
 background_frame.place(x=0,y=0)
 buttonFrame.grid(row=5,column=0,columnspan=6,padx=100,pady=65)
 
@@ -218,9 +231,7 @@ imgLblto.grid(row=3,column=5,padx=5,sticky=W)
 equation = StringVar()
 
 #Entrybox for Buttons
-conOfentNum = StringVar(window, value = equation)
 entName = Entry(window, textvariable=equation)
-#entName.grid(row=1,column=1,sticky=W)
 entName.focus_set()
 
 #Convert from Formatting label
